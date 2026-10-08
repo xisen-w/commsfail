@@ -15,9 +15,9 @@ E1 posts only; E2 adds the runner's record of turns and checks; E3 adds each age
 from __future__ import annotations
 import json, re
 from pathlib import Path
-from ..annotators.taxonomy import catalog, load_choice
-from ..sources.sharednet import load, parse_ts, post_ops
-from ..trace import Trace
+from ..taxonomy import catalog, load_choice
+from ...sources.sharednet import load, parse_ts, post_ops
+from ...trace import Trace
 
 SEQ_RE = re.compile(r'"sequence"\s*:\s*(\d+)')
 READ_RE = re.compile(r"(?:^|[\s'\"/;&|(])(?:sharednet|sn)\s+read\b")

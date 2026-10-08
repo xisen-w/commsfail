@@ -9,7 +9,8 @@ A built-in annotator is a folder, commsfail/annotators/<name>/, with three files
 Taxonomies are not kept per annotator: taxonomy-choices/ holds one catalog of patterns and the ways to group
 them, and an annotator names the choice it reports in (see taxonomy.py).
 
-Adding the folder registers it. There is no list to edit. ``example_kickstart`` is the one to copy:
+Live pipelines such as standard/ declare PIPELINE = True and run through their own CLI commands;
+they are excluded from this offline registry. Adding an ANNOTATOR folder registers it. There is no list to edit. ``example_kickstart`` is the one to copy:
 ``commsfail new <name>`` does that.
 
 A plugin annotator is a class in any installed package, announced through an entry point:
@@ -36,7 +37,10 @@ def builtin() -> dict[str, type]:
     for m in pkgutil.iter_modules(__path__):
         if not m.ispkg or m.name.startswith("_"):
             continue
-        cls = getattr(importlib.import_module(f"{__name__}.{m.name}"), "ANNOTATOR", None)
+        module = importlib.import_module(f"{__name__}.{m.name}")
+        if getattr(module, "PIPELINE", False):
+            continue
+        cls = getattr(module, "ANNOTATOR", None)
         if cls is None:
             raise ImportError(f"commsfail/annotators/{m.name}/__init__.py must set ANNOTATOR = <the class>")
         if getattr(cls, "name", None) != m.name:

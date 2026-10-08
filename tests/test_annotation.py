@@ -2,8 +2,8 @@
 import json
 from pathlib import Path
 import pytest
-from commsfail.annotation import annotate, build_bundle, check_annotation, check_judged, check_sweep
-from commsfail.annotation.agree import compare
+from commsfail.annotators.standard import annotate, build_bundle, check_annotation, check_judged, check_sweep
+from commsfail.annotators.standard.agree import compare
 
 GOAL_RUN = str(Path(__file__).resolve().parent / "fixtures" / "goal_run")
 
@@ -131,7 +131,7 @@ def test_workspace_md_holds_the_teams_files_the_snapshots_and_the_report(tmp_pat
     assert "## Snapshots" in ws and "# Findings" in ws and "print('hi')" in ws
 
 def test_each_container_has_its_own_name_and_the_box_caps(tmp_path, monkeypatch):
-    from commsfail.annotation import pipeline
+    from commsfail.annotators.standard import pipeline
     cmds = []
     def fake_run(cmd, **kw):
         cmds.append(cmd)
@@ -174,7 +174,7 @@ def test_invalid_verdict_exhaustion_cannot_produce_success(tmp_path):
 
 def test_docker_timeout_removes_container_before_retry(tmp_path, monkeypatch):
     import subprocess
-    from commsfail.annotation import pipeline
+    from commsfail.annotators.standard import pipeline
     calls = []
     def process(cmd, **kwargs):
         calls.append(cmd)
@@ -189,7 +189,7 @@ def test_docker_timeout_removes_container_before_retry(tmp_path, monkeypatch):
 
 
 def test_verdict_incident_causes_must_reference_real_incidents():
-    from commsfail.annotation.check import verdict
+    from commsfail.annotators.standard.check import verdict
     obj = {'items': [{'index': 0, 'causes': [{'kind': 'incident', 'incidents': [None]}]}],
            'explains_score': 'yes', 'summary': 'Invalid reference.'}
     assert verdict(obj, {'incidents': []}, {'items': [{'index': 0, 'score': 0}]})

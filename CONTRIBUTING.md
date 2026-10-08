@@ -37,6 +37,8 @@ These hold for every change, by anyone, including maintainers.
 
 ## Contributing an annotator
 
+`commsfail/annotators/standard/` is the live automated pipeline, invoked with `annotate` or `annotate-batch`. Its `PIPELINE = True` marker keeps it out of offline discovery. The class/schema contract below applies to the offline `ANNOTATOR` methods used by `analyse`.
+
 Different people bring different methods. All of them live side by side here, and the same tests check all of them. You do not need anyone's permission to design a new kind of annotator. You do need to follow the rules below.
 
 ### The rules

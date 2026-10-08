@@ -171,9 +171,9 @@ docker build -t commsfail-agent-annotator:0.1 tools/agent-annotator
 commsfail annotate runs/goal-run --out out/goal-run --grade runs/goal-run/score.json --effort high
 ```
 
-For fully automated research analysis, use `commsfail annotate-batch RECORDS --out FRESH_BATCH --workers 2 --effort high`. It selects n=2/3/4 by default, validates every result, and resumes failed cases while preserving their previous attempts. See the [batch runbook](commsfail/annotation/README.md#fully-automated-research-batch).
+For fully automated research analysis, use `commsfail annotate-batch RECORDS --out FRESH_BATCH --workers 2 --effort high`. It selects n=2/3/4 by default, validates every result, and resumes failed cases while preserving their previous attempts. See the [batch runbook](commsfail/annotators/standard/README.md#fully-automated-research-batch).
 
-The record format, the steps, the checks, and how far it can be trusted are in [commsfail/annotation](commsfail/annotation).
+The record format, the steps, the checks, and how far it can be trusted are in [commsfail/annotation](commsfail/annotators/standard).
 
 ## Contributing
 
@@ -196,9 +196,9 @@ commsfail/
     taxonomy-choices/      patterns.json (every pattern, once) and the choices: ten_modes, state_gap, decision_point
     regex_v1/              one annotator: __init__.py, schema.json, README.md
     facts_v1/              said versus did, from each seat's own log
+    standard/              standard automated failure analysis: bundle, A/B, judge, verdict, batch
     example_kickstart/     a working sample, read in state_gap: what `commsfail new` copies
   audit/                   human labels: blind export, kappa, adjudication, gold; the built-in codebooks
-  annotation/              failure incidents by agents: bundle, checks, agreement, pipeline, prompts/
   cli.py
 tests/
   fixtures/goal_run/       a synthetic goal-run record folder

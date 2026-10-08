@@ -31,7 +31,7 @@
 ### Task 1: Harden one-record annotation
 
 **Files:**
-- Modify: `commsfail/annotation/pipeline.py`
+- Modify: `commsfail/annotators/standard/pipeline.py`
 - Modify: `tests/test_annotation.py`
 
 **Interfaces:**
@@ -46,8 +46,8 @@
 ### Task 2: Add resumable batch execution and validation
 
 **Files:**
-- Create: `commsfail/annotation/batch.py`
-- Modify: `commsfail/annotation/__init__.py`
+- Create: `commsfail/annotators/standard/batch.py`
+- Modify: `commsfail/annotators/standard/__init__.py`
 - Modify: `commsfail/cli.py`
 - Create: `tests/test_annotation_batch.py`
 
@@ -63,7 +63,7 @@
 ### Task 3: Document and publish the automated protocol
 
 **Files:**
-- Modify: `commsfail/annotation/README.md`
+- Modify: `commsfail/annotators/standard/README.md`
 - Modify: `README.md`
 - Modify: `CHANGELOG.md`
 

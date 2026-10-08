@@ -1,4 +1,4 @@
-# annotation
+# standard
 
 Failure incidents in one run, annotated by agents:
 - Two agents annotate the run independently.
@@ -6,7 +6,7 @@ Failure incidents in one run, annotated by agents:
 - Every reply passes deterministic checks before it is kept. A reply that fails goes back to its agent with the reasons.
 - Only after the record is final does a last agent see the grade, and it says what cost each rubric item.
 
-This is not an annotator in the sense of `commsfail/annotators/`. Those run offline and deterministically inside `analyse`. This pipeline calls a model and writes its own record, `commsfail/annotation.v1`. In place of determinism, it keeps every prompt and every raw reply.
+`standard` is the standard automated failure-analysis pipeline, alongside the other methods in `commsfail/annotators/`. Run it with `commsfail annotate` or `commsfail annotate-batch`. It calls a model and writes `commsfail/annotation.v1`, preserving prompts and raw replies. The other methods run offline through `commsfail analyse --annotator NAME`.
 
 ## Running it
 

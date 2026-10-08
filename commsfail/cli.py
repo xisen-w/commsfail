@@ -148,6 +148,9 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
 
     if a.cmd == "annotators":
+        from .annotators.standard.pipeline import SCHEMA
+        print(f"{'standard':<18} {'1':<8} {'builtin pipeline':<24} {SCHEMA:<32} "
+              "state_gap@1      use annotate / annotate-batch")
         for name, cls in sorted(registry().items()):
             tax = taxonomy_of(cls)
             tax = f"{tax['id']}@{tax['version']}" if tax else "-"
@@ -183,7 +186,7 @@ def main(argv=None) -> int:
               f"method in {made[0].name}, then {made[1].name}, {made[2].name} and {made[3].name}")
         return 0
     if a.cmd == "annotate-batch":
-        from .annotation.batch import run_batch
+        from .annotators.standard.batch import run_batch
         try:
             result = run_batch(a.src_root, a.out, a.pattern, a.workers, a.model, a.effort, a.image, a.retries)
         except (ValueError, OSError) as exc:
@@ -192,7 +195,7 @@ def main(argv=None) -> int:
         print(json.dumps(result, indent=2))
         return 1 if result["failed"] else 0
     if a.cmd == "annotate":
-        from .annotation import DockerCodex, annotate
+        from .annotators.standard import DockerCodex, annotate
         rec = annotate(a.src, a.out, DockerCodex(image=a.image, model=a.model, effort=a.effort), grade=a.grade,
                        retries=a.retries)
         ag = rec["agreement"]
