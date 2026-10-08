@@ -4,7 +4,7 @@ import threading
 from pathlib import Path
 from types import SimpleNamespace
 import pytest
-from commsfail.annotation import batch
+from commsfail.annotators.standard import batch
 
 
 def completed(out, run):

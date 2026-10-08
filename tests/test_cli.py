@@ -13,6 +13,7 @@ def test_lists(capsys):
     out = capsys.readouterr().out
     assert "regex_v1" in out and "builtin" in out and "comms-failure/analysis.v1" in out
     assert "ten_modes@1" in out and "state_gap@1" in out
+    assert any(line.startswith("standard ") and "annotate-batch" in line for line in out.splitlines())
     assert main(["sources"]) == 0 and "sharednet" in capsys.readouterr().out
 
 def test_analyse_validate_and_markdown(tmp_path, capsys):

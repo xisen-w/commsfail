@@ -2,7 +2,7 @@
 written so that an agent can fix them; an empty list means the output is kept."""
 from __future__ import annotations
 import json, re
-from ..annotators.taxonomy import group_of, load_choice, patterns
+from ..taxonomy import group_of, load_choice, patterns
 
 CLASSES = ("unsaid", "unreceived", "misread", "disagreement", "ungrounded", "stalled")
 FIELDS = ("id", "posts", "anchor", "actions", "class", "pattern", "class_reason", "cause", "consequence", "severity",
