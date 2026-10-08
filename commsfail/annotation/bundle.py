@@ -226,7 +226,8 @@ def build(src: str, dest: str | Path) -> dict:
                 desc = f"read the board: up to P{raw.get((seat, o['turn'], o['i'])) or _read_max(o)}"
             elif o["kind"] == "command":
                 cmd = o.get("command") or ""
-                desc = f"command [exit {o.get('exit_code')}]: {cmd[:1500] if re.search(r'<<|> ?[\w./-]+\.(py|md|sh|json|csv)', cmd) else cmd[:400]}"
+                limit = 1500 if re.search(r'<<|> ?[\w./-]+\.(py|md|sh|json|csv)', cmd) else 400
+                desc = f"command [exit {o.get('exit_code')}]: {cmd[:limit]}"
                 if o.get("exit_code") not in (0, None):
                     desc += f"\n    output ends: {(o.get('output') or '')[-200:]}"
             elif o["kind"] == "file_change":
