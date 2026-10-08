@@ -15,6 +15,7 @@ E1 posts only; E2 adds the runner's record of turns and checks; E3 adds each age
 from __future__ import annotations
 import json, re
 from pathlib import Path
+from datetime import datetime, timedelta
 from ..taxonomy import catalog, load_choice
 from ...sources.sharednet import load, parse_ts, post_ops
 from ...trace import Trace
@@ -44,15 +45,16 @@ def _t(s) -> str:
 def evidence_level(trace: Trace) -> str:
     return "E3" if trace.has_ops else "E2" if trace.wakes else "E1"
 
-def _wake(trace: Trace, seat: str, turn: int | None = None, at: float | None = None) -> dict | None:
+def _wake(trace: Trace, seat: str, turn: int | None = None, at: datetime | None = None) -> dict | None:
     for w in trace.wakes:
         if w.get("seat") != seat:
             continue
         if turn is not None and w.get("turn") == turn:
             return w
-        if at is not None and parse_ts(w.get("started_at")) is not None:
-            end = parse_ts(w.get("ended_at")) or float("inf")
-            if parse_ts(w["started_at"]) <= at <= end + 1:
+        start = parse_ts(w.get("started_at"))
+        if at is not None and start is not None:
+            end = parse_ts(w.get("ended_at"))
+            if start <= at and (end is None or at <= end + timedelta(seconds=1)):
                 return w
     return None
 
