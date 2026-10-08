@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "commsfail/jev-annotation.v1",
+  "title": "Jev typed post/class annotation",
+  "description": "A pure Jev pipeline record with typed decisions and explicit missing explanations; not the standard incident schema.",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "run",
+    "model",
+    "protocol",
+    "evidence_level",
+    "incidents",
+    "uncertain",
+    "rejected",
+    "sweep",
+    "accounting",
+    "agreement",
+    "verdict",
+    "usage",
+    "limitations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "commsfail/jev-annotation.v1"
+    },
+    "version": {
+      "type": "string"
+    },
+    "run": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "const": "typesafe/jev-1.13"
+    },
+    "protocol": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "evidence_level": {
+      "const": "E3"
+    },
+    "incidents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "anchor",
+          "class",
+          "pattern",
+          "evidence_ref",
+          "evidence_block_id",
+          "severity",
+          "repaired",
+          "source",
+          "probabilities",
+          "details",
+          "coverage",
+          "explanation"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "anchor": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "class": {
+            "enum": [
+              "unsaid",
+              "unreceived",
+              "misread",
+              "disagreement",
+              "ungrounded",
+              "stalled"
+            ]
+          },
+          "pattern": {
+            "type": "string"
+          },
+          "evidence_ref": {
+            "type": "string"
+          },
+          "evidence_block_id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 5
+          },
+          "repaired": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "source": {
+            "enum": [
+              "agents",
+              "harness",
+              "undecidable"
+            ]
+          },
+          "probabilities": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "details": {
+            "type": "object"
+          },
+          "coverage": {
+            "type": "object"
+          },
+          "explanation": {
+            "type": "null"
+          },
+          "unseen_post": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "uncertain": {
+      "type": "array"
+    },
+    "rejected": {
+      "type": "array"
+    },
+    "sweep": {
+      "type": "array"
+    },
+    "accounting": {
+      "type": "array"
+    },
+    "agreement": {
+      "type": "object"
+    },
+    "verdict": {
+      "type": "object",
+      "required": [
+        "schema",
+        "items",
+        "final_sha256",
+        "method"
+      ]
+    },
+    "usage": {
+      "type": "object"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

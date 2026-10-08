@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add a separate pure-Jev Decisions API pipeline with typed A/B decisions, adjudication,
+  grade attribution, explicit evidence coverage, response caching, and resumable batches.
+  Its post/class schema and agreement unit differ from the standard generative pipeline.
+
 - Move the standard automated annotator to `commsfail/annotators/standard/`; update imports and packaged prompts, and list it in `commsfail annotators`. The `annotate` and `annotate-batch` commands and output schema are unchanged.
 
 - Add resumable `annotate-batch` with two workers, E3 artifact validation, per-case logs and incremental summaries. Reject nonempty single-run output directories and fail when graded verdict retries are exhausted.

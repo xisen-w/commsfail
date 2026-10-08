@@ -7,6 +7,26 @@ import pytest
 from commsfail.annotators.standard import batch
 
 
+def test_jev_batch_rejects_overlap_and_changed_config(tmp_path, monkeypatch):
+    import shutil
+    from commsfail.annotators.jev import __main__ as jev
+    from commsfail.annotators.jev.client import write
+    src, out = tmp_path / "src", tmp_path / "out"
+    src.mkdir()
+    run = src / "research__task__n2__r1"
+    shutil.copytree(Path(__file__).parent / "fixtures/goal_run", run)
+    write(run / "score.json", {"items": []})
+    with pytest.raises(ValueError, match="separate"):
+        jev.run_batch(src, src / "output")
+    def fail(*a, **kw):
+        raise RuntimeError("synthetic transport failure")
+    monkeypatch.setattr(jev, "annotate", fail)
+    summary = jev.run_batch(src, out)
+    assert summary["failed"] == 1 and summary["pending"] == 0
+    with pytest.raises(ValueError, match="configuration"):
+        jev.run_batch(src, out, retries=2)
+
+
 def completed(out, run):
     out.mkdir(parents=True, exist_ok=True)
     objects = {
