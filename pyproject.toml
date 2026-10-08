@@ -36,6 +36,7 @@ include = ["commsfail*"]
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.md", "*.txt"]
 "commsfail.annotators" = ["taxonomy-choices/*.json", "taxonomy-choices/*.md"]
+"commsfail.annotation" = ["prompts/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
