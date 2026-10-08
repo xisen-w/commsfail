@@ -19,4 +19,3 @@ Run communication-failure analysis without human annotation. For each multi-agen
 ## Repository boundary
 
 The per-record pipeline and batch runner live in `commsfail`. Cross-record statistics and paper figures may consume its records elsewhere, but must not reimplement the annotator.
-
