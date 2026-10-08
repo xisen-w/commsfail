@@ -7,6 +7,134 @@ from commsfail.annotators.standard.agree import compare
 
 GOAL_RUN = str(Path(__file__).resolve().parent / "fixtures" / "goal_run")
 
+
+def _jev_response(body, selected=None):
+    from commsfail.annotators.jev import MODEL
+    from commsfail.annotators.jev.client import digest
+    answers = {}
+    for name, question in body["questions"].items():
+        options = question["criteria"]
+        value = (selected or {}).get(name, "none" if "none" in options else next(iter(options)))
+        answers[name] = {"type": "choice", "choice": value, "confidence": .99,
+                         "probabilities": {o: float(o == value) for o in options}}
+    return {"id": "fixture-" + digest(body), "model": MODEL + "-20260917", "provider": "TypeSafe",
+            "answers": answers, "usage": {"input_tokens": 50, "output_tokens": 10, "cost": .0001}}
+
+
+def test_jev_client_caches_verified_responses_and_rejects_model_substitution(tmp_path):
+    from commsfail.annotators.jev.client import Decisions, validate_response
+    from commsfail.annotators.jev.pipeline import choice
+    calls = []
+    def fake(body):
+        calls.append(body)
+        return _jev_response(body)
+    client = Decisions(tmp_path, transport=fake)
+    q = {"x": choice("is it?", {"yes": "yes", "no": "no"})}
+    assert client.call({"x": 1}, q, "one") == client.call({"x": 1}, q, "one")
+    assert len(calls) == 1
+    with pytest.raises(ValueError, match="changed"):
+        client.call({"x": 2}, q, "one")
+    bad = _jev_response(calls[0]); bad["model"] = "some-other-model"
+    with pytest.raises(ValueError, match="model mismatch"):
+        validate_response(bad, q)
+    bad = _jev_response(calls[0]); bad["answers"]["x"]["probabilities"]["yes"] = float("nan")
+    with pytest.raises(ValueError, match="distribution"):
+        validate_response(bad, q)
+
+
+def test_jev_keeps_full_text_and_lines_but_removes_capabilities():
+    from commsfail.annotators.jev.evidence import clean, blocks
+    text = "first\n" + " ".join(["long text"] * 100) + "\nlast"
+    assert clean(text) == text
+    assert "FAKEFAKE" not in clean("shr_FAKEFAKEFAKE0000")
+    assert "abcdef" not in clean("sk-or-v1-abcdefghijklmnop0123456789")
+    chunks = blocks(text * 10, "test.md")
+    assert len(chunks) > 1 and all(len(b["text"].encode()) <= 2200 for b in chunks)
+    assert len({b["id"] for b in chunks}) == len(chunks)
+
+
+def test_jev_prevents_grade_leakage_covers_posts_and_resumes(tmp_path):
+    import shutil
+    from commsfail.annotators.jev.pipeline import annotate as jev_annotate, validate_completed, CLASSES
+    from commsfail.annotators.jev.client import read, write
+    src, out = tmp_path / "source", tmp_path / "out"
+    shutil.copytree(GOAL_RUN, src)
+    write(src / "score.json", {"items": [{"index": 0, "score": 50, "weight": 1,
+                                         "reasoning": "GRADE_SENTINEL", "content": "test functionality"}]})
+    calls = []
+    def fake(body):
+        calls.append(body)
+        state = body["state"]
+        seq = (state.get("focal_post") or {}).get("seq")
+        selected = {}
+        if "rubric_item" in state:
+            assert (out / "final.json").exists()
+            selected = {"cause": "capability", "incident": "none"}
+        else:
+            assert "GRADE_SENTINEL" not in json.dumps(body)
+            if set(body["questions"]) == set(CLASSES) and seq == 5:
+                selected = {"ungrounded": "D1"}
+            if "supported" in body["questions"]:
+                selected = {"supported": "yes", "severity": "2", "repaired": "no", "source": "agents",
+                            "evidence": state["evidence"][0]["id"]}
+        return _jev_response(body, selected)
+    rec = jev_annotate(src, out, transport=fake)
+    assert [i["anchor"] for i in rec["incidents"]] == [5]
+    assert len(rec["sweep"]) == 11
+    assert rec["incidents"][0]["explanation"] is None
+    assert validate_completed(out, src.name, True) == []
+    total = len(calls)
+    jev_annotate(src, out, transport=fake)
+    assert len(calls) == total
+    write(out / "B.json", {})
+    assert validate_completed(out, src.name, True)
+
+
+def test_jev_unknowns_are_preserved_and_source_mutation_is_rejected(tmp_path):
+    import shutil
+    from commsfail.annotators.jev.pipeline import annotate as jev_annotate, CLASSES
+    from commsfail.annotators.jev.client import write
+    src = tmp_path / "source"; shutil.copytree(GOAL_RUN, src)
+    write(src / "score.json", {"items": []})
+    def fake(body):
+        return _jev_response(body, {k: "undecidable" for k in body["questions"]})
+    rec = jev_annotate(src, tmp_path / "out", transport=fake)
+    assert not rec["incidents"] and len(rec["uncertain"]) == 11 * len(CLASSES)
+    with (src / "checks.ndjson").open("a") as f:
+        f.write("\n")
+    with pytest.raises(ValueError, match="input changed"):
+        jev_annotate(src, tmp_path / "out", transport=fake)
+
+
+def test_jev_request_budget_evidence_coverage_and_taxonomy(tmp_path):
+    from commsfail.annotators.jev.evidence import Evidence
+    from commsfail.annotators.jev.pipeline import questions, PATTERNS
+    from commsfail.annotators.jev.client import encoded, MAX_BYTES
+    ev = Evidence(GOAL_RUN, tmp_path / "bundle")
+    assert len(PATTERNS) == 37
+    for p in ev.agent_posts:
+        state = ev.state(p)
+        assert state["focal_post"]["text"] == ev.posts[p["seq"]]["text"]
+        q = questions(state)
+        assert len(encoded({"state": state, "questions": q})) < MAX_BYTES
+        assert list(q["ungrounded"]["criteria"]) == list(reversed(list(questions(state, True)["ungrounded"]["criteria"])))
+    partial = {**state, "coverage": {**state["coverage"], "timeline_complete": False}}
+    assert set(questions(partial)["unsaid"]["criteria"]) == {"undecidable", "none"}
+
+
+def test_jev_retries_transient_transport_and_saves_attempts(tmp_path):
+    from commsfail.annotators.jev.client import Decisions
+    from commsfail.annotators.jev.pipeline import choice
+    calls = []
+    def fake(body):
+        calls.append(body)
+        if len(calls) == 1:
+            raise TimeoutError()
+        return _jev_response(body)
+    client = Decisions(tmp_path, transport=fake, sleep=lambda _: None)
+    client.call({}, {"x": choice("choose", {"yes": "yes", "no": "no"})}, "one")
+    assert len(calls) == 2 and len(list(tmp_path.rglob("attempt-*.json"))) == 2
+
 def _inc(**kw):
     base = {"id": "I1", "posts": [3, 4], "anchor": 4, "actions": [], "class": "unreceived", "pattern": "crossed_posts",
             "class_reason": "1 holds; 2 fails: codex-3 had not received P2", "cause": "no read during the turn",
