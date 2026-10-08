@@ -3,11 +3,14 @@
 An annotator passes when it is well formed (name, version, a valid schema with $id, title and description),
 its output conforms to its own schema on every sample, it gives the same output twice and leaves the trace
 unchanged, it runs with the network cut, every "seq" it reports is a real post, and no token reaches its output.
+An annotator with a taxonomy also passes when a built-in one names a choice in taxonomy-choices/, and every
+pattern its output reports is in that taxonomy.
 """
 import copy, json
 from pathlib import Path
 import pytest
-from commsfail.annotators import check_annotator, origin, registry, run, validate_output, validate_record
+from commsfail.annotators import (check_annotator, choices, origin, registry, run, taxonomy_of, validate_output,
+                                  validate_record)
 from commsfail.sources.sharednet import TOKEN_RE
 
 NAMES = sorted(registry())
@@ -62,3 +65,18 @@ def test_record_round_trip(name, any_trace, no_network):
     rec = json.loads(json.dumps(run(registry()[name](), any_trace)))
     assert rec["annotator"]["name"] == name
     assert validate_record(rec) == []
+
+WITH_TAXONOMY = sorted(n for n in NAMES if taxonomy_of(registry()[n]))
+
+@pytest.mark.parametrize("name", [n for n in WITH_TAXONOMY if origin(registry()[n]) == "builtin"])
+def test_a_builtin_annotator_names_a_choice_and_keeps_no_taxonomy_of_its_own(name):
+    cls = registry()[name]
+    assert cls.taxonomy in choices(), f"{name}: set taxonomy to one of {choices()}"
+    folder = Path(__import__(cls.__module__, fromlist=["_"]).__file__).parent
+    assert not (folder / "taxonomy.json").exists(), f"{name}: taxonomies live in taxonomy-choices/, not in the annotator"
+
+@pytest.mark.parametrize("name", WITH_TAXONOMY)
+def test_output_reports_only_modes_of_its_taxonomy(name, any_trace, no_network):
+    ann = registry()[name]()
+    ids = {m["id"] for m in taxonomy_of(ann)["modes"]}
+    assert set(ann.modes_in(ann.annotate(any_trace))) <= ids

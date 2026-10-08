@@ -6,13 +6,15 @@ ops before it. On a source without ops (a share, an export) it reports nothing a
 from __future__ import annotations
 import re
 from collections import Counter
+from ..taxonomy import mode_ids, taxonomy_of
 from ...sources.sharednet import agent_posts, is_board_command, ops_before, post_ops, redact
 from ...trace import Trace
 
-# fact -> (the taxonomy mode it is evidence for, or None; what it means)
+# fact -> (the catalog pattern it is evidence for; what it means). The output names the pattern as "mode"
+# when the chosen taxonomy has it, and None otherwise (ten_modes has no claim_without_action).
 FACTS = {
     "overlapping_claim":       ("R1", "a seat claims a file that another seat claimed earlier, with no hand-over in between"),
-    "claim_without_action":    (None, "a seat claims a file and its log shows no change to that file in the whole run"),
+    "claim_without_action":    ("claim_without_action", "a seat claims a file and its log shows no change to that file in the whole run"),
     "review_without_reading":  ("D2", "a review, approval or review notes, before the seat opened or changed any file"),
     "success_without_run":     ("D1", "a done, pass or final claim from a seat that had run no test and no program"),
     "success_after_failure":   ("D1", "a done, pass or final claim right after the seat's last work command failed"),
@@ -77,13 +79,18 @@ class FactsV1:
     name = "facts_v1"
     version = "0.1.0"
     schema = "schema.json"
+    taxonomy = "ten_modes"
+
+    def modes_in(self, output: dict) -> list[str]:
+        return [f["mode"] for f in output["findings"] if f["mode"]]
 
     def annotate(self, trace: Trace) -> dict:
         posts = agent_posts(trace)
         linked = post_ops(trace)
+        ids = set(mode_ids(taxonomy_of(self)))
         findings = []
         def find(fact, p, why, op=None):
-            mode = FACTS[fact][0]
+            mode = FACTS[fact][0] if FACTS[fact][0] in ids else None
             where = linked.get(p["seq"])
             findings.append({"fact": fact, "mode": mode, "seq": p["seq"], "who": p["who"],
                              "turn": where[1] if where else None, "op": where[2] if where else None,
@@ -158,7 +165,7 @@ class FactsV1:
             caveats.append("files are matched by name; a claim on a function inside a file counts as a claim on the file")
         return {"applies": trace.has_ops, "seats": seats, "findings": findings,
                 "counts": {k: counts.get(k, 0) for k in FACTS},
-                "by_mode": {m: by_mode.get(m, 0) for m in sorted({v[0] for v in FACTS.values() if v[0]})},
+                "by_mode": {m: by_mode.get(m, 0) for m in sorted({v[0] for v in FACTS.values() if v[0] in ids})},
                 "caveats": caveats}
 
     def markdown(self, out: dict) -> str:

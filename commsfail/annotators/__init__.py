@@ -2,11 +2,15 @@
 
 A built-in annotator is a folder, commsfail/annotators/<name>/, with three files:
 
-    __init__.py   the code; it sets ANNOTATOR = <the class>
+    __init__.py   the code; it sets ANNOTATOR = <the class>, and taxonomy = "<a choice>" if it reports failures
     schema.json   the output schema
     README.md     what it reports, how, and what it is good and bad at
 
-Adding the folder registers it. There is no list to edit.
+Taxonomies are not kept per annotator: taxonomy-choices/ holds one catalog of patterns and the ways to group
+them, and an annotator names the choice it reports in (see taxonomy.py).
+
+Adding the folder registers it. There is no list to edit. ``example_kickstart`` is the one to copy:
+``commsfail new <name>`` does that.
 
 A plugin annotator is a class in any installed package, announced through an entry point:
 
@@ -22,6 +26,7 @@ from .._plugins import load_group
 from ..trace import Trace
 from .base import (RECORD, Annotator, check_annotator, make_record, schema_of, schema_path, validate_output,
                    validate_record)
+from .taxonomy import check_choice, check_taxonomy, choices, load_choice, taxonomy_of
 
 ENTRY_POINT_GROUP = "commsfail.annotators"
 
@@ -69,4 +74,5 @@ def __getattr__(name: str):
     raise AttributeError(f"module 'commsfail.annotators' has no attribute {name!r}")
 
 __all__ = ["ENTRY_POINT_GROUP", "RECORD", "Annotator", "builtin", "discover", "registry", "get_annotator", "origin", "run",
-           "check_annotator", "make_record", "schema_of", "schema_path", "validate_output", "validate_record", "REGISTRY"]
+           "check_annotator", "make_record", "schema_of", "schema_path", "validate_output", "validate_record",
+           "taxonomy_of", "check_taxonomy", "check_choice", "choices", "load_choice", "REGISTRY"]

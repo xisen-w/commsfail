@@ -5,8 +5,9 @@
     commsfail annotators                                  the registered annotators, built in and plugins
     commsfail sources                                     the registered sources
     commsfail schema <annotator>                          an annotator's output schema
+    commsfail taxonomy [<choice> | <annotator>]           the taxonomy choices, or one of them, resolved
     commsfail validate <record.json>                      check a record; exit 1 if it does not conform
-    commsfail new <name>                                  start a new annotator folder (run it in the repository root)
+    commsfail new <name>                                  copy example_kickstart to a new annotator (run it in the repository root)
     commsfail audit export|compare|finalize|codebook      human annotation: blind export, kappa, adjudication, gold
 
 With the default source, <src> is a goal-run record folder, a room.ndjson, a table export, a saved share JSON,
@@ -14,11 +15,12 @@ or a share link. ``analyse`` writes a record (the annotator's output in an envel
 output does not conform to the annotator's own schema.
 """
 from __future__ import annotations
-import argparse, json, sys
+import argparse, json, re, sys
 from pathlib import Path
 from . import __version__
 from . import audit
-from .annotators import get_annotator, make_record, origin, registry, schema_of, validate_output, validate_record
+from .annotators import (choices, get_annotator, load_choice, make_record, origin, registry, schema_of, taxonomy_of,
+                         validate_output, validate_record)
 from .annotators.base import NAME_RE
 from .sources import DEFAULT, get_source, sources
 from .sources.sharednet import summary
@@ -27,8 +29,11 @@ def _first_line(doc) -> str:
     lines = (doc or "").strip().splitlines()
     return lines[0] if lines else ""
 
+KICKSTART = Path(__file__).resolve().parent / "annotators" / "example_kickstart"
+KICKSTART_NOTE = re.compile(r"<!-- kickstart -->.*?<!-- /kickstart -->\n*", re.S)
+
 def scaffold(name: str, root: Path) -> list[Path]:
-    """Copy the template annotator to commsfail/annotators/<name>/ and tests/annotators/test_<name>.py."""
+    """Copy example_kickstart to commsfail/annotators/<name>/ and its test to tests/annotators/test_<name>.py."""
     if not NAME_RE.match(name):
         raise SystemExit("the name must be 2 to 41 characters: lowercase letters, digits and _, starting with a letter")
     pkg = root / "commsfail" / "annotators"
@@ -39,14 +44,16 @@ def scaffold(name: str, root: Path) -> list[Path]:
         if p.exists():
             raise SystemExit(f"{p} exists already")
     cls = "".join(w[:1].upper() + w[1:] for w in name.split("_"))
-    tpl = Path(__file__).resolve().parent / "annotators" / "_template"
-    fill = lambda s: s.replace("TemplateName", cls).replace("template_name", name)
+    fill = lambda s: s.replace("ExampleKickstart", cls).replace("example_kickstart", name)
     dest.mkdir(parents=True)
     test.parent.mkdir(parents=True, exist_ok=True)
     made = []
-    for src, dst in [(tpl / "__init__.py", dest / "__init__.py"), (tpl / "schema.json", dest / "schema.json"),
-                     (tpl / "README.md", dest / "README.md"), (tpl / "test_template.py.txt", test)]:
-        dst.write_text(fill(src.read_text(encoding="utf-8")), encoding="utf-8")
+    for src, dst in [(KICKSTART / f, dest / f) for f in ("__init__.py", "schema.json", "README.md")] + \
+                    [(KICKSTART / "test_example_kickstart.py.txt", test)]:
+        text = src.read_text(encoding="utf-8")
+        if dst.name == "README.md":
+            text = KICKSTART_NOTE.sub("", text)
+        dst.write_text(fill(text), encoding="utf-8")
         made.append(dst)
     return made
 
@@ -54,7 +61,11 @@ def _audit(a) -> int:
     if a.step == "codebook":
         if not a.name:
             for name, book in audit.CODEBOOKS.items():
-                print(f"{name:<14} {len(book['labels']):>2} labels  {book['description']}")
+                print(f"{name:<18} {len(book['labels']):>2} labels  {book['description']}")
+            for name in choices():
+                t = load_choice(name)
+                print(f"{name:<18} {len(t['modes']):>2} labels  the patterns of the {name} taxonomy; "
+                      f"{name}:groups for its {len(t['groups'])} classes")
             return 0
         print(json.dumps(audit.load_codebook(a.name), ensure_ascii=False, indent=1)); return 0
     if a.step == "export":
@@ -94,8 +105,10 @@ def main(argv=None) -> int:
     sub.add_parser("annotators", help="list registered annotators")
     sub.add_parser("sources", help="list registered sources")
     sc = sub.add_parser("schema", help="print an annotator's output schema"); sc.add_argument("annotator")
+    tx = sub.add_parser("taxonomy", help="list the taxonomy choices, or print one (by choice or annotator)")
+    tx.add_argument("name", nargs="?")
     va = sub.add_parser("validate", help="check a record file"); va.add_argument("file")
-    nw = sub.add_parser("new", help="start a new annotator folder from the template")
+    nw = sub.add_parser("new", help="start a new annotator: a copy of example_kickstart")
     nw.add_argument("name"); nw.add_argument("--root", default=".", help="the repository root (default: .)")
     au = sub.add_parser("audit", help="human annotation: blind export, compare (kappa), finalize (gold)")
     steps = au.add_subparsers(dest="step", required=True)
@@ -120,7 +133,10 @@ def main(argv=None) -> int:
 
     if a.cmd == "annotators":
         for name, cls in sorted(registry().items()):
-            print(f"{name:<16} {str(getattr(cls, 'version', '?')):<8} {origin(cls):<24} {schema_of(cls).get('$id', '?'):<30} {_first_line(cls.__doc__)}")
+            tax = taxonomy_of(cls)
+            tax = f"{tax['id']}@{tax['version']}" if tax else "-"
+            print(f"{name:<18} {str(getattr(cls, 'version', '?')):<8} {origin(cls):<24} {schema_of(cls).get('$id', '?'):<32} "
+                  f"{tax:<18} {_first_line(cls.__doc__)}")
         return 0
     if a.cmd == "sources":
         for name, fn in sorted(sources().items()):
@@ -129,6 +145,17 @@ def main(argv=None) -> int:
         return 0
     if a.cmd == "schema":
         print(json.dumps(schema_of(get_annotator(a.annotator)), indent=2)); return 0
+    if a.cmd == "taxonomy":
+        if not a.name:
+            for name in choices():
+                t = load_choice(name)
+                print(f"{name:<16} {len(t['groups']):>2} classes {len(t['modes']):>3} patterns  "
+                      f"{'complete' if t['complete'] else 'partial ':<9} {_first_line(t['description'])}")
+            return 0
+        tax = load_choice(a.name) if a.name in choices() else taxonomy_of(get_annotator(a.name))
+        if tax is None:
+            print(f"{a.name} has no taxonomy", file=sys.stderr); return 1
+        print(json.dumps(tax, ensure_ascii=False, indent=2)); return 0
     if a.cmd == "validate":
         with open(a.file, encoding="utf-8") as f:
             errs = validate_record(json.load(f))
@@ -136,7 +163,8 @@ def main(argv=None) -> int:
     if a.cmd == "new":
         made = scaffold(a.name, Path(a.root))
         print("made:\n  " + "\n  ".join(str(p) for p in made))
-        print(f"next: write your method in {made[0]}, describe its output in {made[1]}, then run pytest")
+        print(f"next: run pytest (the copy passes as it is), then make it yours: pick a taxonomy and write your "
+              f"method in {made[0].name}, then {made[1].name}, {made[2].name} and {made[3].name}")
         return 0
     if a.cmd == "audit":
         try:
