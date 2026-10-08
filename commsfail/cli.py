@@ -127,6 +127,22 @@ def main(argv=None) -> int:
     fi.add_argument("a"); fi.add_argument("b")
     fi.add_argument("--adjudicated", help="the adjudicated rows (leave out when compare found none)")
     fi.add_argument("--key", required=True); fi.add_argument("--out", required=True)
+    an2 = sub.add_parser("annotate", help="annotate failure incidents with two agents and a judge (annotation.v1)")
+    an2.add_argument("src", help="a goal-run record folder (agents/ inside it are the agents' logs)")
+    an2.add_argument("--out", required=True, help="the folder for the bundle, the annotations, and the record")
+    an2.add_argument("--grade", help="the run's grade (score.json); with it, the verdict step runs after the judge")
+    an2.add_argument("--model", default="gpt-6-luna"); an2.add_argument("--effort", default=None)
+    an2.add_argument("--image", default="commsfail-agent-annotator:0.1")
+    an2.add_argument("--retries", type=int, default=3)
+    ab = sub.add_parser("annotate-batch", help="run and resume graded E3 incident annotations")
+    ab.add_argument("src_root")
+    ab.add_argument("--out", required=True)
+    ab.add_argument("--pattern", default="research__*__n[234]__r1")
+    ab.add_argument("--workers", type=int, default=2)
+    ab.add_argument("--model", default="gpt-6-luna")
+    ab.add_argument("--effort", default="high")
+    ab.add_argument("--image", default="commsfail-agent-annotator:0.1")
+    ab.add_argument("--retries", type=int, default=3)
     cb = steps.add_parser("codebook", help="list the built-in codebooks, or print one")
     cb.add_argument("name", nargs="?")
     a = ap.parse_args(argv)
@@ -165,6 +181,24 @@ def main(argv=None) -> int:
         print("made:\n  " + "\n  ".join(str(p) for p in made))
         print(f"next: run pytest (the copy passes as it is), then make it yours: pick a taxonomy and write your "
               f"method in {made[0].name}, then {made[1].name}, {made[2].name} and {made[3].name}")
+        return 0
+    if a.cmd == "annotate-batch":
+        from .annotation.batch import run_batch
+        try:
+            result = run_batch(a.src_root, a.out, a.pattern, a.workers, a.model, a.effort, a.image, a.retries)
+        except (ValueError, OSError) as exc:
+            print(f"commsfail annotate-batch: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps(result, indent=2))
+        return 1 if result["failed"] else 0
+    if a.cmd == "annotate":
+        from .annotation import DockerCodex, annotate
+        rec = annotate(a.src, a.out, DockerCodex(image=a.image, model=a.model, effort=a.effort), grade=a.grade,
+                       retries=a.retries)
+        ag = rec["agreement"]
+        print(f"{len(rec['incidents'])} incidents ({len(rec['rejected'])} rejected); A/B incident F1 "
+              f"{ag['incident_f1']}, class kappa {ag['class_kappa']}, severity kappa {ag['severity_weighted_kappa']}; "
+              f"attempts {rec['process']['attempts']}; wrote {a.out}/annotation.json")
         return 0
     if a.cmd == "audit":
         try:

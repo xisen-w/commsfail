@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Add resumable `annotate-batch` with two workers, E3 artifact validation, per-case logs and incremental summaries. Reject nonempty single-run output directories and fail when graded verdict retries are exhausted.
+
+- `commsfail annotate` and `commsfail.annotation`: failure incidents annotated by agents
+  (`commsfail/annotation.v1`):
+  - the unit is an incident of 1 to n posts, with an anchor, a `state_gap` class and pattern, a cause, a
+    consequence, and a severity from 1 to 5 read from the work;
+  - two Codex annotators work from a bundle with no grade; deterministic checks send failing replies back
+    (at most three times), including a sweep that must cover every agent post;
+  - a judge settles the record; with `--grade`, a verdict step attributes each lost rubric item;
+  - agreement between the annotators: incident F1, class kappa, and weighted severity kappa.
+  The agents run in `tools/agent-annotator` (Codex CLI 0.160.1), capped and with the bundle read-only.
+  Checked end to end on eight research runs; see `commsfail/annotation/README.md`.
+
 ## 0.4.0
 
 Taxonomies become choices. There is one catalog of failure patterns, each defined once, and several ways to

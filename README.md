@@ -156,6 +156,25 @@ A codebook can be:
 - an annotator's name, which gives the taxonomy it reports in;
 - a JSON file holding a codebook. The procedure and the rules for annotators are in [commsfail/audit](commsfail/audit).
 
+## Failure incidents by agents: `commsfail annotate`
+
+`commsfail annotate` annotates the failure incidents of one goal-run record with agents.
+1. Two Codex agents annotate it independently, each from a bundle that holds no grade.
+2. Deterministic checks send any reply that fails back to its agent, with the reasons.
+3. A judge agent settles the final record.
+4. With `--grade`, a last agent then says what cost each rubric item.
+
+The unit is an incident: one to n posts, with an anchor, a `state_gap` class and pattern, a cause, a consequence and a severity from 1 to 5.
+
+```bash
+docker build -t commsfail-agent-annotator:0.1 tools/agent-annotator
+commsfail annotate runs/goal-run --out out/goal-run --grade runs/goal-run/score.json --effort high
+```
+
+For fully automated research analysis, use `commsfail annotate-batch RECORDS --out FRESH_BATCH --workers 2 --effort high`. It selects n=2/3/4 by default, validates every result, and resumes failed cases while preserving their previous attempts. See the [batch runbook](commsfail/annotation/README.md#fully-automated-research-batch).
+
+The record format, the steps, the checks, and how far it can be trusted are in [commsfail/annotation](commsfail/annotation).
+
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before you open a pull request. It covers:
@@ -179,15 +198,18 @@ commsfail/
     facts_v1/              said versus did, from each seat's own log
     example_kickstart/     a working sample, read in state_gap: what `commsfail new` copies
   audit/                   human labels: blind export, kappa, adjudication, gold; the built-in codebooks
+  annotation/              failure incidents by agents: bundle, checks, agreement, pipeline, prompts/
   cli.py
 tests/
   fixtures/goal_run/       a synthetic goal-run record folder
   fixtures/share.json      a synthetic share
   test_contract.py         the rules, on every annotator and every sample
   test_audit.py            the audit steps, the export on every sample
+  test_annotation.py       the bundle, the checks, agreement, and the pipeline with a fake agent
   test_taxonomy.py         the catalog, the choices, and the completeness check
   annotators/              one behaviour test file per annotator
 examples/plugin/           an annotator and a source in a separate package
+tools/agent-annotator/     the image the annotation agents run in
 ```
 
 ## License
