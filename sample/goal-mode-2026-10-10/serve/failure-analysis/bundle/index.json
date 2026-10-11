@@ -1,0 +1,377 @@
+{
+  "run": "Information_002__n2__serve__r1",
+  "evidence_level": "E3",
+  "posts": {
+    "1": {
+      "who": "Xisen Wang",
+      "role": "goal",
+      "at": "2026-10-10T06:17:13.338Z",
+      "seen": null
+    },
+    "2": {
+      "who": "codex-2",
+      "role": "agent",
+      "at": "2026-10-10T06:17:24.801Z",
+      "seen": 1
+    },
+    "3": {
+      "who": "codex-1",
+      "role": "agent",
+      "at": "2026-10-10T06:17:26.941Z",
+      "seen": 1
+    },
+    "4": {
+      "who": "codex-2",
+      "role": "agent",
+      "at": "2026-10-10T06:17:56.229Z",
+      "seen": 1
+    },
+    "5": {
+      "who": "codex-1",
+      "role": "agent",
+      "at": "2026-10-10T06:18:12.496Z",
+      "seen": 1
+    },
+    "6": {
+      "who": "codex-1",
+      "role": "agent",
+      "at": "2026-10-10T06:18:16.425Z",
+      "seen": 5
+    },
+    "7": {
+      "who": "codex-1",
+      "role": "agent",
+      "at": "2026-10-10T06:18:19.053Z",
+      "seen": 1
+    },
+    "8": {
+      "who": "codex-2",
+      "role": "agent",
+      "at": "2026-10-10T06:18:20.452Z",
+      "seen": 3
+    },
+    "9": {
+      "who": "codex-2",
+      "role": "agent",
+      "at": "2026-10-10T06:18:24.186Z",
+      "seen": 3
+    },
+    "10": {
+      "who": "codex-1",
+      "role": "agent",
+      "at": "2026-10-10T06:18:40.757Z",
+      "seen": 8
+    },
+    "11": {
+      "who": "codex-2",
+      "role": "agent",
+      "at": "2026-10-10T06:18:42.463Z",
+      "seen": 9
+    },
+    "12": {
+      "who": "codex-1",
+      "role": "agent",
+      "at": "2026-10-10T06:18:43.722Z",
+      "seen": 8
+    },
+    "13": {
+      "who": "codex-2",
+      "role": "agent",
+      "at": "2026-10-10T06:18:53.111Z",
+      "seen": 10
+    },
+    "14": {
+      "who": "codex-1",
+      "role": "agent",
+      "at": "2026-10-10T06:18:58.302Z",
+      "seen": 11
+    }
+  },
+  "actions": {
+    "codex-1:1:0": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "message"
+    },
+    "codex-1:1:1": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:2": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:3": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:4": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:5": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:6": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:7": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:8": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:9": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:10": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "message"
+    },
+    "codex-1:1:11": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "file_change"
+    },
+    "codex-1:1:12": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "file_change"
+    },
+    "codex-1:1:13": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:14": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "file_change"
+    },
+    "codex-1:1:15": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:16": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:17": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-1:1:18": {
+      "seat": "codex-1",
+      "turn": 1,
+      "kind": "message"
+    },
+    "codex-1:2:0": {
+      "seat": "codex-1",
+      "turn": 2,
+      "kind": "message"
+    },
+    "codex-1:2:1": {
+      "seat": "codex-1",
+      "turn": 2,
+      "kind": "file_change"
+    },
+    "codex-1:2:2": {
+      "seat": "codex-1",
+      "turn": 2,
+      "kind": "file_change"
+    },
+    "codex-1:2:3": {
+      "seat": "codex-1",
+      "turn": 2,
+      "kind": "command"
+    },
+    "codex-1:2:4": {
+      "seat": "codex-1",
+      "turn": 2,
+      "kind": "command"
+    },
+    "codex-1:2:5": {
+      "seat": "codex-1",
+      "turn": 2,
+      "kind": "message"
+    },
+    "codex-1:3:0": {
+      "seat": "codex-1",
+      "turn": 3,
+      "kind": "message"
+    },
+    "codex-1:3:1": {
+      "seat": "codex-1",
+      "turn": 3,
+      "kind": "command"
+    },
+    "codex-1:3:2": {
+      "seat": "codex-1",
+      "turn": 3,
+      "kind": "file_change"
+    },
+    "codex-1:3:3": {
+      "seat": "codex-1",
+      "turn": 3,
+      "kind": "command"
+    },
+    "codex-1:3:4": {
+      "seat": "codex-1",
+      "turn": 3,
+      "kind": "message"
+    },
+    "codex-2:1:0": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "message"
+    },
+    "codex-2:1:1": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-2:1:2": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-2:1:3": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-2:1:4": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-2:1:5": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-2:1:6": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-2:1:7": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "command"
+    },
+    "codex-2:1:8": {
+      "seat": "codex-2",
+      "turn": 1,
+      "kind": "message"
+    },
+    "codex-2:2:0": {
+      "seat": "codex-2",
+      "turn": 2,
+      "kind": "message"
+    },
+    "codex-2:2:1": {
+      "seat": "codex-2",
+      "turn": 2,
+      "kind": "command"
+    },
+    "codex-2:2:2": {
+      "seat": "codex-2",
+      "turn": 2,
+      "kind": "command"
+    },
+    "codex-2:2:3": {
+      "seat": "codex-2",
+      "turn": 2,
+      "kind": "command"
+    },
+    "codex-2:2:4": {
+      "seat": "codex-2",
+      "turn": 2,
+      "kind": "command"
+    },
+    "codex-2:2:5": {
+      "seat": "codex-2",
+      "turn": 2,
+      "kind": "command"
+    },
+    "codex-2:2:6": {
+      "seat": "codex-2",
+      "turn": 2,
+      "kind": "message"
+    },
+    "codex-2:3:0": {
+      "seat": "codex-2",
+      "turn": 3,
+      "kind": "message"
+    },
+    "codex-2:3:1": {
+      "seat": "codex-2",
+      "turn": 3,
+      "kind": "command"
+    },
+    "codex-2:3:2": {
+      "seat": "codex-2",
+      "turn": 3,
+      "kind": "command"
+    },
+    "codex-2:3:3": {
+      "seat": "codex-2",
+      "turn": 3,
+      "kind": "command"
+    },
+    "codex-2:3:4": {
+      "seat": "codex-2",
+      "turn": 3,
+      "kind": "command"
+    },
+    "codex-2:3:5": {
+      "seat": "codex-2",
+      "turn": 3,
+      "kind": "command"
+    },
+    "codex-2:3:6": {
+      "seat": "codex-2",
+      "turn": 3,
+      "kind": "message"
+    },
+    "codex-2:4:0": {
+      "seat": "codex-2",
+      "turn": 4,
+      "kind": "message"
+    },
+    "codex-2:4:1": {
+      "seat": "codex-2",
+      "turn": 4,
+      "kind": "command"
+    },
+    "codex-2:4:2": {
+      "seat": "codex-2",
+      "turn": 4,
+      "kind": "command"
+    },
+    "codex-2:4:3": {
+      "seat": "codex-2",
+      "turn": 4,
+      "kind": "message"
+    }
+  }
+}

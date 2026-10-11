@@ -1,0 +1,171 @@
+{
+  "items": [
+    {
+      "id": "W1",
+      "name": "code/ analysis code",
+      "required_by": 1
+    },
+    {
+      "id": "W2",
+      "name": "outputs/ intermediate results",
+      "required_by": 1
+    },
+    {
+      "id": "W3",
+      "name": "report/report.md",
+      "required_by": 1
+    },
+    {
+      "id": "W4",
+      "name": "report/images/*.png figures",
+      "required_by": 1
+    },
+    {
+      "id": "W5",
+      "name": "Passing bash check.sh before DONE",
+      "required_by": 1
+    }
+  ],
+  "incidents": [
+    {
+      "id": "I1",
+      "posts": [
+        8,
+        10,
+        11,
+        12,
+        13
+      ],
+      "anchor": 10,
+      "actions": [
+        "codex-1:2:2",
+        "codex-1:2:5",
+        "codex-2:3:5",
+        "codex-1:3:2"
+      ],
+      "class": "misread",
+      "pattern": "NEW:partial_review_followthrough",
+      "class_reason": "1 holds: codex-2's task-16 caveat reached the board in P8. 2 holds: codex-1's turn 2 was handed posts through P8. 3 fails: P8 asked for the empty answer to be excluded from answer-accuracy evidence or clearly labeled rubric-only; P10 reported the mismatch fixed, but P11 found the report still called 1.75 final-answer accuracy and omitted the unanswered task. P12 was posted without codex-1 having received P11; the report was corrected later, as confirmed in P13.",
+      "cause": "codex-1 updated the script and plot but only partially carried the task-16 distinction into the report; the report correction was completed after codex-2 identified the remaining wording gap.",
+      "consequence": "The report needed another review and edit. The final report was corrected and the required deliverable was complete.",
+      "severity": 2,
+      "severity_reason": "2: the report required an additional review and edit; the final deliverable was not left wrong or missing.",
+      "repaired": true,
+      "source": "agents",
+      "confidence": "high",
+      "items": [
+        "W3"
+      ]
+    },
+    {
+      "id": "I2",
+      "posts": [
+        13,
+        14
+      ],
+      "anchor": 14,
+      "actions": [
+        "codex-2:4:2",
+        "codex-1:3:4"
+      ],
+      "class": "unreceived",
+      "pattern": "premature_final",
+      "class_reason": "1 holds: codex-2's final review reached the board in P13 before the run ended. 2 fails: P14's timeline says codex-1 had received only through P11, and codex-1's log records no later board read; it declared DONE without receiving P13's confirmation that the final artifact and check had been reviewed.",
+      "cause": "codex-1 ended the run on DONE before reading codex-2's final review post.",
+      "consequence": "The required review confirmation was on the board and the final check had passed, but codex-1 did not receive that confirmation before declaring completion. No deliverable was lost.",
+      "severity": 1,
+      "severity_reason": "1: no work was redone or lost; codex-2 had reviewed the final artifact and the check had passed before DONE.",
+      "repaired": false,
+      "source": "agents",
+      "confidence": "high",
+      "items": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5"
+      ]
+    }
+  ],
+  "undecidable": [],
+  "sweep": [
+    {
+      "post": 2,
+      "incidents": [],
+      "note": "Sets independent review scope and asks for a draft; no conflict."
+    },
+    {
+      "post": 3,
+      "incidents": [],
+      "note": "Claims code, outputs, and report ownership and requests independent review; consistent with P2."
+    },
+    {
+      "post": 4,
+      "incidents": [],
+      "note": "Reports source caveats and check limits; codex-1 later incorporates them."
+    },
+    {
+      "post": 5,
+      "incidents": [],
+      "note": "Announces draft, generated files, and checks; asks for review."
+    },
+    {
+      "post": 6,
+      "incidents": [],
+      "note": "Says reciprocal-vector caveat and scope are incorporated; consistent with source and P4."
+    },
+    {
+      "post": 7,
+      "incidents": [],
+      "note": "Reports draft ready and requests final review; no conflicting claim."
+    },
+    {
+      "post": 8,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Finds task-16 answer/score mismatch and requests a clear exclusion or rubric-only label."
+    },
+    {
+      "post": 9,
+      "incidents": [],
+      "note": "Restates P8's task-16 finding and clarifies formatting; no new state change."
+    },
+    {
+      "post": 10,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Reports task-16 fix and report update; the report still has the accuracy wording gap later identified in P11."
+    },
+    {
+      "post": 11,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Review finds the remaining report mismatch and specifies the needed distinction."
+    },
+    {
+      "post": 12,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Reports the distinction as updated without having received P11; codex-1's turn was handed posts only through P8."
+    },
+    {
+      "post": 13,
+      "incidents": [
+        "I1",
+        "I2"
+      ],
+      "note": "Confirms the report correction and final review; codex-1 had not received this confirmation before DONE."
+    },
+    {
+      "post": 14,
+      "incidents": [
+        "I2"
+      ],
+      "note": "Declares DONE after the check, without having received P13's final-review confirmation."
+    }
+  ]
+}

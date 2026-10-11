@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "room_id": "rom_cce502f23e",
+  "goal": {
+    "message_id": "msg_4a2d3f9609",
+    "sequence": 1,
+    "until": [
+      "said /^DONE$/",
+      "check bash check.sh",
+      "after 8m",
+      "budget 500k tokens"
+    ],
+    "started_at": "2026-10-10T06:17:13.338Z"
+  },
+  "ended_by": {
+    "at": "2026-10-10T06:18:59.586Z",
+    "detail": "PASS: report/report.md (1059 words) and its figures exist.",
+    "trigger": "check bash check.sh"
+  },
+  "runner": {
+    "started_at": "2026-10-10T06:17:15.428Z",
+    "ended_at": "2026-10-10T06:18:59.614Z",
+    "workspace": "/study/runs/goal-harness-study-2026-10-10/work/Information_002__n2__serve__r1"
+  },
+  "totals": {
+    "messages": 14,
+    "checks": 2,
+    "snapshots": 5,
+    "tokens": 158672,
+    "cached_tokens": 1834752
+  },
+  "image": "sha256:d724b9126ded4a0d8238c9abf28b215913efa0cc0445e03ca59b14d30ae4d397",
+  "web_search": "live",
+  "turn_limit_s": 480,
+  "mention_gate": false,
+  "task_gate": false,
+  "message_routing": "mention-trigger-full-context",
+  "communication_mode": "serve",
+  "launcher_permissions": "goal-container-bypass",
+  "history": "fresh-per-run",
+  "agents": [
+    {
+      "name": "codex-1",
+      "driver": "codex",
+      "model": "gpt-6-luna",
+      "member_id": "i_162d71d7cc",
+      "session_id": "00000000-0000-4000-8000-7a97209a6bb0",
+      "turns": 3,
+      "failed_turns": 0,
+      "tokens": 57485,
+      "usage": {
+        "input": 49733,
+        "cached": 842240,
+        "output": 7752
+      }
+    },
+    {
+      "name": "codex-2",
+      "driver": "codex",
+      "model": "gpt-6-luna",
+      "member_id": "i_a35b0183af",
+      "session_id": "00000000-0000-4000-8000-8e32176d0c56",
+      "turns": 4,
+      "failed_turns": 0,
+      "tokens": 101187,
+      "usage": {
+        "input": 96166,
+        "cached": 992512,
+        "output": 5021
+      }
+    }
+  ]
+}

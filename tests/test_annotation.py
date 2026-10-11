@@ -7,6 +7,43 @@ from commsfail.annotators.standard.agree import compare
 
 GOAL_RUN = str(Path(__file__).resolve().parent / "fixtures" / "goal_run")
 
+@pytest.mark.parametrize("arm,posts,incidents", [("goal", 15, 3), ("serve", 14, 1)])
+def test_published_pilot_analysis_matches_its_trace_and_accounts_for_both_annotators(arm, posts, incidents):
+    from commsfail.sources.sharednet import load
+    root = Path(__file__).resolve().parents[1] / "sample" / "goal-mode-2026-10-10" / arm
+    trace = load(str(root / f"record-{arm}"))
+    folder = root / "failure-analysis"
+    read = lambda name: json.loads((folder / name).read_text())
+    index, a, b, final = (read(name) for name in ("bundle/index.json", "A.json", "B.json", "final.json"))
+    assert len(trace.posts) == posts and len(trace.seats) == 2 and trace.has_ops
+    assert set(index["posts"]) == {str(post["seq"]) for post in trace.posts}
+    for record in (a, b):
+        assert check_annotation(record, index) == []
+        assert check_sweep(record, index) == []
+    assert check_judged(final, index, a, b) == []
+    assert len(final["incidents"]) == incidents
+    assert read("annotation.json")["incidents"] == final["incidents"]
+    assert len(list((root / "agent-sessions").glob("*/session.jsonl"))) == 2
+
+def test_published_pilot_manifest_covers_parseable_exports_with_matching_hashes():
+    import hashlib
+    root = Path(__file__).resolve().parents[1] / "sample" / "goal-mode-2026-10-10"
+    files = json.loads((root / "manifest.json").read_text())["files"]
+    paths = [item["path"] for item in files]
+    assert len(paths) == len(set(paths))
+    assert set(paths) == {str(p.relative_to(root)) for p in root.rglob("*")
+                          if p.is_file() and p.name not in ("README.md", "manifest.json")}
+    for item in files:
+        path = root / item["path"]
+        raw = path.read_bytes()
+        assert len(raw) == item["bytes"]
+        assert hashlib.sha256(raw).hexdigest() == item["published_sha256"]
+        if path.suffix == ".json":
+            json.loads(raw)
+        elif path.suffix in (".jsonl", ".ndjson"):
+            for line in raw.splitlines():
+                json.loads(line)
+
 def _inc(**kw):
     base = {"id": "I1", "posts": [3, 4], "anchor": 4, "actions": [], "class": "unreceived", "pattern": "crossed_posts",
             "class_reason": "1 holds; 2 fails: codex-3 had not received P2", "cause": "no read during the turn",

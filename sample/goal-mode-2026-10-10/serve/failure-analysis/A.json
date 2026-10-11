@@ -1,0 +1,167 @@
+{
+  "items": [
+    {
+      "id": "W1",
+      "name": "Analysis code in code/",
+      "required_by": 1
+    },
+    {
+      "id": "W2",
+      "name": "Intermediate results in outputs/",
+      "required_by": 1
+    },
+    {
+      "id": "W3",
+      "name": "Comprehensive research report at report/report.md",
+      "required_by": 1
+    },
+    {
+      "id": "W4",
+      "name": "PNG figures in report/images/",
+      "required_by": 1
+    }
+  ],
+  "incidents": [
+    {
+      "id": "I1",
+      "posts": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "anchor": 10,
+      "actions": [
+        "codex-1:2:2",
+        "codex-2:3:5",
+        "codex-1:3:2",
+        "codex-2:4:2"
+      ],
+      "class": "misread",
+      "pattern": "NEW:partial_request_drop",
+      "class_reason": "1 holds: codex-2’s task-16 correction request reached the board at P8 and was repeated at P9. 2 holds: codex-1 had received up to P8 before P10. 3 fails: P8 required the report to distinguish the 16-task rubric mean from the 15 answer-bearing task mean; the report update associated with P10 still described 1.75 as final-answer accuracy, as codex-2 documented at P11. The report was corrected later, confirmed at P13.",
+      "cause": "codex-1 updated the plot and machine-readable scores but did not carry the full requested distinction into the report before claiming the report was updated.",
+      "consequence": "The report temporarily mischaracterized the 16-task rubric mean as answer accuracy, requiring another review and report edit. The final report was corrected.",
+      "severity": 2,
+      "severity_reason": "2: The report required an additional review and edit; the delivered work was unchanged after repair.",
+      "repaired": true,
+      "source": "agents",
+      "confidence": "high",
+      "items": [
+        "W3"
+      ]
+    },
+    {
+      "id": "I2",
+      "posts": [
+        13,
+        14
+      ],
+      "anchor": 14,
+      "actions": [
+        "codex-1:3:4"
+      ],
+      "class": "unreceived",
+      "pattern": "premature_final",
+      "class_reason": "1 holds: codex-2’s final review reached the board at P13 before completion. 2 fails: codex-1 posted DONE at P14 having received only up to P11; its turn log shows no later board read, so it had not received P13. The final-review post was therefore unread when codex-1 declared completion.",
+      "cause": "codex-1 ended the run with a DONE post before receiving codex-2’s final review confirmation.",
+      "consequence": "The completion post bypassed receipt of the final review, though that review had already occurred, the required artifacts were present, and the runner’s check passed.",
+      "severity": 1,
+      "severity_reason": "1: Nothing was lost or left incomplete; the final review and passing check were already recorded before the completion post.",
+      "repaired": false,
+      "source": "agents",
+      "confidence": "high",
+      "items": [
+        "W1",
+        "W2",
+        "W3",
+        "W4"
+      ]
+    }
+  ],
+  "undecidable": [],
+  "sweep": [
+    {
+      "post": 2,
+      "incidents": [],
+      "note": "Requests independent review and sets a review-only role."
+    },
+    {
+      "post": 3,
+      "incidents": [],
+      "note": "Defines ownership and single-paper scope."
+    },
+    {
+      "post": 4,
+      "incidents": [],
+      "note": "Reports source limits and analytic caveats."
+    },
+    {
+      "post": 5,
+      "incidents": [],
+      "note": "Announces draft and asks for corrections; check claim is supported."
+    },
+    {
+      "post": 6,
+      "incidents": [],
+      "note": "Reports incorporated caveat and requests review."
+    },
+    {
+      "post": 7,
+      "incidents": [],
+      "note": "Repeats draft status; review request remains open."
+    },
+    {
+      "post": 8,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Identifies task-16 mismatch and requests report correction."
+    },
+    {
+      "post": 9,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Clarifies the same task-16 correction request."
+    },
+    {
+      "post": 10,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Claims report update; report still mislabels the all-task mean."
+    },
+    {
+      "post": 11,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Finds the remaining report mismatch."
+    },
+    {
+      "post": 12,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Reports revised metrics; report correction is still pending."
+    },
+    {
+      "post": 13,
+      "incidents": [
+        "I1",
+        "I2"
+      ],
+      "note": "Confirms corrected report and final review; codex-1 had not received this post before DONE."
+    },
+    {
+      "post": 14,
+      "incidents": [
+        "I2"
+      ],
+      "note": "Declares DONE without having received P13."
+    }
+  ]
+}

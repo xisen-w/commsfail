@@ -1,7 +1,7 @@
 """Shared fixtures.
 
 ``synthetic_trace``  a small Room, built in Python, in which every mode of the taxonomy happens once.
-``sample``           every SharedNet source in tests/fixtures/ (a record folder, a share JSON, ...), loaded.
+``sample``           every SharedNet source in tests/fixtures/ and sample/ (a record folder, a share JSON, ...), loaded.
 ``any_trace``        all of the above: the contract tests run every annotator on each one.
 """
 import socket
@@ -12,14 +12,15 @@ from commsfail.trace import Trace
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 SAMPLES = sorted(p for p in FIXTURES.iterdir() if p.name != "README.md" and not p.name.startswith("."))
+SAMPLES += sorted((FIXTURES.parents[1] / "sample").glob("*/*/record-*"))
 
-@pytest.fixture(params=[p.name for p in SAMPLES])
+@pytest.fixture(params=SAMPLES, ids=[p.relative_to(FIXTURES.parents[1]).as_posix() for p in SAMPLES])
 def sample(request) -> Trace:
-    return sharednet.load(str(FIXTURES / request.param))
+    return sharednet.load(str(request.param))
 
-@pytest.fixture(params=["synthetic"] + [p.name for p in SAMPLES])
+@pytest.fixture(params=["synthetic"] + SAMPLES, ids=["synthetic"] + [p.relative_to(FIXTURES.parents[1]).as_posix() for p in SAMPLES])
 def any_trace(request) -> Trace:
-    return _synthetic() if request.param == "synthetic" else sharednet.load(str(FIXTURES / request.param))
+    return _synthetic() if request.param == "synthetic" else sharednet.load(str(request.param))
 
 @pytest.fixture
 def goal_run() -> Trace:
