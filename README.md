@@ -38,6 +38,10 @@ print(record["output"]["metrics"])
 
 ## Input: SharedNet traces
 
+For real, sanitized Goal Run traces with per-agent sessions and corresponding
+failure analysis, see [`sample/`](sample/README.md). These complement the small
+synthetic fixtures used by the test suite.
+
 `commsfail.sources.sharednet` reads every SharedNet source into the same `Trace`. A source shows what it has. A field it cannot show stays empty.
 
 | source | made by | what it shows |

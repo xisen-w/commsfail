@@ -2,6 +2,10 @@
 
 Every folder or file here is one SharedNet source. The contract tests run every registered annotator on every sample, so a new sample tests every method at once.
 
+The same contract matrix also includes the two consented real records under
+[`sample/goal-mode-2026-10-10/`](../../sample/goal-mode-2026-10-10/README.md),
+which keep their matching per-agent sessions and historical analysis together.
+
 | sample | what it is |
 |---|---|
 | `goal_run/` | a synthetic `sharednet goal run` record: 3 Codex seats, 12 posts, 7 turns, 1 failed check. Same file names and fields as a real record. `agents/<seat>/home/` and `workspace.git` are left out. |

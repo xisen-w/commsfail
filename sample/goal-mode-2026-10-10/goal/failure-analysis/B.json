@@ -1,0 +1,201 @@
+{
+  "items": [
+    {
+      "id": "W1",
+      "name": "code/analyze.py",
+      "required_by": 1
+    },
+    {
+      "id": "W2",
+      "name": "outputs/",
+      "required_by": 1
+    },
+    {
+      "id": "W3",
+      "name": "report/report.md",
+      "required_by": 1
+    },
+    {
+      "id": "W4",
+      "name": "report/images/*.png",
+      "required_by": 1
+    },
+    {
+      "id": "W5",
+      "name": "outputs/independent_review.md",
+      "required_by": 1
+    }
+  ],
+  "incidents": [
+    {
+      "id": "I1",
+      "posts": [
+        4,
+        5,
+        6
+      ],
+      "anchor": 5,
+      "actions": [
+        "codex-1:1:9",
+        "codex-2:1:13"
+      ],
+      "class": "unreceived",
+      "pattern": "crossed_posts",
+      "class_reason": "1 holds: the YAML task count was relevant to defining the report scope and reached the board in P4 and P5. 2 fails: P4 says there are 14 analytic tasks and P5 says there are 15 task records; each author had received only P1, so neither had received the other’s count. P6 corrects the count to 16 scored tasks plus one metadata record.",
+      "cause": "The agents counted the YAML independently and posted incompatible counts before seeing each other’s findings.",
+      "consequence": "The team spent posts reconciling the dataset size; the final report uses the corrected count.",
+      "severity": 1,
+      "severity_reason": "1: the count discrepancy was corrected in the next exchange, and no work was lost or redone.",
+      "repaired": true,
+      "source": "agents",
+      "confidence": "high",
+      "items": [
+        "W3"
+      ]
+    },
+    {
+      "id": "I2",
+      "posts": [
+        9,
+        12,
+        14
+      ],
+      "anchor": 12,
+      "actions": [
+        "codex-1:2:7",
+        "codex-1:3:1"
+      ],
+      "class": "misread",
+      "pattern": "over_reading",
+      "class_reason": "1 holds: the staged potential answer and band offset were discussed on the board in P9. 2 holds: codex-1 had received up to P9 when it posted P12. 3 fails: P9 says the potential matrices are correct and the offset is handled separately, but P12 reports task 3 as omitting the offset; P14 corrects that interpretation.",
+      "cause": "codex-1 read the potential-only task answer as if it had to include the separate band-offset term from the full Hamiltonian.",
+      "consequence": "The report temporarily described a correct staged answer as an omission and needed a correction.",
+      "severity": 2,
+      "severity_reason": "2: correcting the mistaken report claim took additional editing; the final report is unchanged in correctness.",
+      "repaired": true,
+      "source": "agents",
+      "confidence": "high",
+      "items": [
+        "W3"
+      ]
+    },
+    {
+      "id": "I3",
+      "posts": [
+        13,
+        14,
+        15
+      ],
+      "anchor": 15,
+      "actions": [
+        "codex-1:4:0",
+        "codex-2:4:3",
+        "codex-2:4:4"
+      ],
+      "class": "misread",
+      "pattern": "NEW:ignored_review_gate",
+      "class_reason": "1 holds: P14 says codex-2 should confirm review of the revised artifact before codex-1 announces completion. 2 holds: codex-1’s turn 4 was handed posts through P14. 3 fails: P13’s review preceded the report edit in P14, and P14 explicitly leaves confirmation pending; P15 declares DONE anyway. codex-2’s later action checked the revised report, but its confirmation attempt was rejected after the room closed.",
+      "cause": "codex-1 posted the completion signal while the requested final review confirmation was still pending on the board, triggering the runner to close the run.",
+      "consequence": "The final review confirmation could not reach the board. The report and figures were present, and the runner’s check passed.",
+      "severity": 2,
+      "severity_reason": "2: the run spent effort on a final review confirmation that was cut off; the required artifacts were delivered and the check passed.",
+      "repaired": false,
+      "source": "agents",
+      "confidence": "high",
+      "items": [
+        "W3",
+        "W4"
+      ]
+    }
+  ],
+  "undecidable": [],
+  "sweep": [
+    {
+      "post": 2,
+      "incidents": [],
+      "note": "Sets reviewer scope and ownership; had received up to P1."
+    },
+    {
+      "post": 3,
+      "incidents": [],
+      "note": "Assigns code, outputs, and report ownership; had received up to P1."
+    },
+    {
+      "post": 4,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Reports 14 analytic tasks; had received up to P1."
+    },
+    {
+      "post": 5,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Reports 15 task records; had received up to P1."
+    },
+    {
+      "post": 6,
+      "incidents": [
+        "I1"
+      ],
+      "note": "Corrects count to 16 scored tasks plus metadata; notes review findings."
+    },
+    {
+      "post": 7,
+      "incidents": [],
+      "note": "Requests review of draft; had received up to P1."
+    },
+    {
+      "post": 8,
+      "incidents": [],
+      "note": "Reports draft and incorporated source checks; had received up to P7."
+    },
+    {
+      "post": 9,
+      "incidents": [
+        "I2"
+      ],
+      "note": "Gives answer-level audit, including task 3 staged potential matrices."
+    },
+    {
+      "post": 10,
+      "incidents": [],
+      "note": "Updates assigned review notes; says owner paths remain untouched."
+    },
+    {
+      "post": 11,
+      "incidents": [],
+      "note": "Reviews draft and requests clarifications; check passes."
+    },
+    {
+      "post": 12,
+      "incidents": [
+        "I2"
+      ],
+      "note": "Misstates task 3 as omitting the offset despite P9; had received up to P9."
+    },
+    {
+      "post": 13,
+      "incidents": [
+        "I3"
+      ],
+      "note": "Reviews the then-current artifact; this review predates P14’s report edit."
+    },
+    {
+      "post": 14,
+      "incidents": [
+        "I2",
+        "I3"
+      ],
+      "note": "Corrects task 3 interpretation and requests final review confirmation."
+    },
+    {
+      "post": 15,
+      "incidents": [
+        "I3"
+      ],
+      "note": "Declares DONE while P14’s requested confirmation is pending."
+    }
+  ]
+}
